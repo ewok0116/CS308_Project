@@ -4,13 +4,18 @@
 from __future__ import annotations
 
 import sys
+import os
 from typing import Iterable, Mapping
 
 import firebase_admin
 from firebase_admin import credentials, firestore
 
 
-SERVICE_ACCOUNT_PATH = "/Users/mehmetsalcan/Desktop/db/cs308db-firebase-adminsdk-fbsvc-98bdb1d218.json"
+# Use env var if provided, else default to your local JSON path
+SERVICE_ACCOUNT_PATH = os.environ.get(
+    "SERVICE_ACCOUNT_PATH",
+    "/Users/kaanzengel/Desktop/CS308_Project/Backend/my-firebase-sa.json",
+)
 
 
 def ensure_app() -> firestore.Client:

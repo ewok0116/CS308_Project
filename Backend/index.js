@@ -1,4 +1,5 @@
 const admin = require('firebase-admin');
+const express = require('express');
 
 // Initialize using Application Default Credentials (set GOOGLE_APPLICATION_CREDENTIALS env var)
 // Fallback: If you insist on a file, set SERVICE_ACCOUNT_PATH env var to a JSON file
@@ -14,40 +15,51 @@ if (serviceAccountPath) {
 	});
 }
 
-async function main() {
-	const firestore = admin.firestore();
+const app = express();
 
-	// List top-level collections and show up to 20 documents from each
+// Basic health check
+app.get('/health', (req, res) => {
+	return res.json({ status: 'ok' });
+});
+
+// List top-level collection names
+app.get('/collections', async (req, res) => {
 	try {
+		const firestore = admin.firestore();
 		const collections = await firestore.listCollections();
-		if (collections.length === 0) {
-			console.log('(No collections found yet)');
-			return;
-		}
-
-		console.log('Connected to Firestore. Collections and sample documents:');
-		for (const col of collections) {
-			console.log(`\nCollection: ${col.id}`);
-			const snapshot = await col.limit(20).get();
-			if (snapshot.empty) {
-				console.log('  (No documents)');
-				continue;
-			}
-			let count = 0;
-			snapshot.forEach((doc) => {
-				count += 1;
-				console.log(`  - ${doc.id}:`, doc.data());
-			});
-			if (count === 20) {
-				console.log('  ... (showing first 20 documents)');
-			}
-		}
+		const names = collections.map((c) => c.id);
+		return res.json({ collections: names });
 	} catch (err) {
-		console.error('Failed to access Firestore:', err);
-		process.exit(1);
+		console.error('Failed to list collections:', err);
+		return res.status(500).json({ error: 'Failed to list collections' });
 	}
-}
+});
 
-main();
+// Return up to 20 documents from a collection
+app.get('/collections/:name', async (req, res) => {
+	const { name } = req.params;
+	try {
+		const firestore = admin.firestore();
+		const snapshot = await firestore.collection(name).limit(20).get();
+		const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+		return res.json({ collection: name, count: documents.length, documents });
+	} catch (err) {
+		console.error(`Failed to read collection ${name}:`, err);
+		return res.status(500).json({ error: `Failed to read collection ${name}` });
+	}
+});
+
+// Root helper
+app.get('/', (req, res) => {
+	return res.json({
+		message: 'Backend is running',
+		endpoints: ['/health', '/collections', '/collections/:name']
+	});
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+	console.log(`Server listening on http://localhost:${PORT}`);
+});
 
 
