@@ -14,7 +14,11 @@ from firebase_admin import credentials, firestore
 # Use env var if provided, else default to your local JSON path
 SERVICE_ACCOUNT_PATH = os.environ.get(
     "SERVICE_ACCOUNT_PATH",
-    "/Users/kaanzengel/Desktop/CS308_Project/Backend/my-firebase-sa.json",
+    "/Users/ecemcakalli/Desktop/CS308_Project/CS308_Project/Backend/my-firebase-sa.json",
+    #This path should be changed also use 
+    # export SERVICE_ACCOUNT_PATH="/Users/... your path"
+    #on terminal
+    #then python3 load_firebase_data.py
 )
 
 
