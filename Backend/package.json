@@ -1,0 +1,13 @@
+{
+  "name": "cs308-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "ISC",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.5.0",
+    "express": "^4.19.2"
+  }
+}
