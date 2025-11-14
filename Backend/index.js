@@ -54,8 +54,67 @@ app.get('/collections/:name', async (req, res) => {
 app.get('/', (req, res) => {
     return res.json({
         message: 'Backend is running',
-        endpoints: ['/health', '/collections', '/collections/:name']
+        endpoints: ['/health', '/collections', '/collections/:name', '/login', '/roles', '/users/:id/role']
     });
+});
+
+// Login endpoint
+app.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Validate input
+        if (!email || !password) {
+            return res.status(400).json({ 
+                error: 'Email and password are required',
+                details: 'Please provide both email and password in the request body'
+            });
+        }
+
+        // Find user by email in Firestore
+        const usersRef = db.collection('users');
+        const snapshot = await usersRef.where('email', '==', email).limit(1).get();
+
+        if (snapshot.empty) {
+            return res.status(401).json({ 
+                error: 'Invalid credentials',
+                details: 'No user found with this email'
+            });
+        }
+
+        // Get user data
+        const userDoc = snapshot.docs[0];
+        const userData = userDoc.data();
+
+        // Check password
+        // Note: In production, passwords should be hashed (e.g., using bcrypt)
+        // For now, we'll do a simple comparison
+        if (userData.password !== password) {
+            return res.status(401).json({ 
+                error: 'Invalid credentials',
+                details: 'Incorrect password'
+            });
+        }
+
+        // Return user data without password
+        const { password: _, ...userWithoutPassword } = userData;
+        
+        return res.json({
+            success: true,
+            message: 'Login successful',
+            user: {
+                id: userDoc.id,
+                ...userWithoutPassword
+            }
+        });
+
+    } catch (err) {
+        console.error('Login error:', err);
+        return res.status(500).json({ 
+            error: 'Failed to process login', 
+            details: err.message 
+        });
+    }
 });
 
 function getTokenFromHeader(req) {
