@@ -419,6 +419,57 @@ def main() -> None:
         },
     ]
 
+    signup_logs = [
+        {
+            "signup_id": 1,
+            "user_id": 1,
+            "email": "ali@example.com",
+            "timestamp": "2025-01-01T10:00:00Z",
+            "method": "email_password",
+        },
+        {
+            "signup_id": 2,
+            "user_id": 2,
+            "email": "ayse@example.com",
+            "timestamp": "2025-01-02T09:30:00Z",
+            "method": "email_password",
+        },
+        {
+            "signup_id": 3,
+            "user_id": 3,
+            "email": "mehmet@example.com",
+            "timestamp": "2025-01-03T14:20:00Z",
+            "method": "email_password",
+        },
+    ]
+
+    login_logs = [
+        {
+            "login_id": 1,
+            "user_id": 1,
+            "email": "ali@example.com",
+            "timestamp": "2025-01-10T08:40:00Z",
+            "success": True,
+            "ip_address": "192.168.1.10",
+        },
+        {
+            "login_id": 2,
+            "user_id": 2,
+            "email": "ayse@example.com",
+            "timestamp": "2025-01-10T10:00:00Z",
+            "success": False,
+            "ip_address": "192.168.1.11",
+        },
+        {
+            "login_id": 3,
+            "user_id": 3,
+            "email": "mehmet@example.com",
+            "timestamp": "2025-01-10T12:20:00Z",
+            "success": True,
+            "ip_address": "192.168.1.12",
+        },
+    ]
+
     refunds = [
         {
             "refund_id": 1,
@@ -510,3 +561,5 @@ if __name__ == "__main__":
         print(f"Failed to load data: {exc}", file=sys.stderr)
         raise
 
+upload_collection(db, "signup_logs", signup_logs, "signup_id")
+upload_collection(db, "login_logs", login_logs, "login_id")
