@@ -43,6 +43,8 @@ def upload_collection(
     print(f"Uploaded {len(docs)} documents to collection '{collection_name}'.")
 
 
+### I ADDED THE ROLE ADMIN TO THE USER TABLE
+
 def main() -> None:
     db = ensure_app()
 
@@ -53,6 +55,7 @@ def main() -> None:
             "email": "ali@example.com",
             "password": "hashed_pass_1",
             "address": "Istanbul, TR",
+            "role": "customer",
         },
         {
             "user_id": 2,
@@ -60,6 +63,7 @@ def main() -> None:
             "email": "ayse@example.com",
             "password": "hashed_pass_2",
             "address": "Ankara, TR",
+            "role": "customer",
         },
         {
             "user_id": 3,
@@ -67,6 +71,7 @@ def main() -> None:
             "email": "mehmet@example.com",
             "password": "hashed_pass_3",
             "address": "Izmir, TR",
+            "role": "customer",
         },
         {
             "user_id": 4,
@@ -74,6 +79,7 @@ def main() -> None:
             "email": "zeynep@example.com",
             "password": "hashed_pass_4",
             "address": "Bursa, TR",
+            "role": "customer",
         },
         {
             "user_id": 5,
@@ -81,6 +87,7 @@ def main() -> None:
             "email": "eren@example.com",
             "password": "hashed_pass_5",
             "address": "Antalya, TR",
+            "role": "customer",
         },
         {
             "user_id": 6,
@@ -88,6 +95,7 @@ def main() -> None:
             "email": "elif@example.com",
             "password": "hashed_pass_6",
             "address": "Eskişehir, TR",
+            "role": "customer",
         },
         {
             "user_id": 7,
@@ -95,6 +103,7 @@ def main() -> None:
             "email": "can@example.com",
             "password": "hashed_pass_7",
             "address": "Adana, TR",
+            "role": "customer",
         },
         {
             "user_id": 8,
@@ -102,6 +111,7 @@ def main() -> None:
             "email": "naz@example.com",
             "password": "hashed_pass_8",
             "address": "Samsun, TR",
+            "role": "customer",
         },
         {
             "user_id": 9,
@@ -109,6 +119,7 @@ def main() -> None:
             "email": "mert@example.com",
             "password": "hashed_pass_9",
             "address": "Kocaeli, TR",
+            "role": "customer",
         },
         {
             "user_id": 10,
@@ -116,6 +127,23 @@ def main() -> None:
             "email": "deniz@example.com",
             "password": "hashed_pass_10",
             "address": "Muğla, TR",
+            "role": "customer",
+        },
+        {
+            "user_id": 11,
+            "name": "Admin Bir",
+            "email": "admin1@example.com",
+            "password": "hashed_pass_admin_1",
+            "address": "Istanbul, TR",
+            "role": "admin",
+        },
+        {
+            "user_id": 12,
+            "name": "Admin İki",
+            "email": "admin2@example.com",
+            "password": "hashed_pass_admin_2",
+            "address": "Ankara, TR",
+            "role": "admin",
         },
     ]
 
