@@ -54,7 +54,7 @@ app.get('/collections/:name', async (req, res) => {
 app.get('/', (req, res) => {
     return res.json({
         message: 'Backend is running',
-        endpoints: ['/health', '/collections', '/collections/:name', '/login', '/roles', '/users/:id/role']
+        endpoints: ['/health', '/collections', '/collections/:name', '/login', '/register', '/roles', '/users/:id/role']
     });
 });
 
@@ -112,6 +112,91 @@ app.post('/login', async (req, res) => {
         console.error('Login error:', err);
         return res.status(500).json({ 
             error: 'Failed to process login', 
+            details: err.message 
+        });
+    }
+});
+
+// Register endpoint
+app.post('/register', async (req, res) => {
+    try {
+        const { email, password, name, address } = req.body;
+
+        // Validate input
+        if (!email || !password || !name) {
+            return res.status(400).json({ 
+                error: 'Missing required fields',
+                details: 'Email, password, and name are required. Address is optional.'
+            });
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ 
+                error: 'Invalid email format',
+                details: 'Please provide a valid email address'
+            });
+        }
+
+        // Validate password length
+        if (password.length < 6) {
+            return res.status(400).json({ 
+                error: 'Password too short',
+                details: 'Password must be at least 6 characters long'
+            });
+        }
+
+        // Check if email already exists
+        const usersRef = db.collection('users');
+        const emailCheck = await usersRef.where('email', '==', email).limit(1).get();
+
+        if (!emailCheck.empty) {
+            return res.status(409).json({ 
+                error: 'Email already registered',
+                details: 'A user with this email already exists'
+            });
+        }
+
+        // Get the next user_id (find max user_id and add 1)
+        const allUsers = await usersRef.get();
+        let maxUserId = 0;
+        allUsers.forEach(doc => {
+            const userId = doc.data().user_id;
+            if (userId && userId > maxUserId) {
+                maxUserId = userId;
+            }
+        });
+        const newUserId = maxUserId + 1;
+
+        // Create new user object
+        const newUser = {
+            user_id: newUserId,
+            email: email,
+            password: password, // Note: In production, hash this password before storing
+            name: name,
+            address: address || '',
+        };
+
+        // Save to Firestore using user_id as document ID
+        await usersRef.doc(String(newUserId)).set(newUser);
+
+        // Return user data without password
+        const { password: _, ...userWithoutPassword } = newUser;
+
+        return res.status(201).json({
+            success: true,
+            message: 'User registered successfully',
+            user: {
+                id: String(newUserId),
+                ...userWithoutPassword
+            }
+        });
+
+    } catch (err) {
+        console.error('Register error:', err);
+        return res.status(500).json({ 
+            error: 'Failed to register user', 
             details: err.message 
         });
     }
